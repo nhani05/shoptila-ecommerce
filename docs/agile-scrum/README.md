@@ -99,22 +99,21 @@ Nhóm áp dụng dãy số Fibonacci rút gọn `(1, 2, 3, 5, 8, 13)` đại di�
 
 Dự án Shoptila được tổ chức thành **8 Epic** bao quát từ MVP đến mở rộng:
 
-```
-[EPIC-01: Identity & Access Management (Auth)]
-      │
-[EPIC-02: Product Catalog & Discovery]
-      │
-[EPIC-03: Cart Management]
-      │
-[EPIC-04: Order Processing & Lifecycle]
-      │
-[EPIC-05: Payment Gateway Integration (VNPAY & COD)]
-      │
-[EPIC-06: Inventory & Admin Back-office]
-      │
-[EPIC-07: Customer Engagement & Promotions (GĐ1 Post-MVP / GĐ2)]
-      │
-[EPIC-08: Real-time Communication & Notifications (GĐ2)]
+```mermaid
+flowchart TD
+    E1["EPIC-01: Identity & Access Management (Auth)"]
+    E2["EPIC-02: Product Catalog & Discovery"]
+    E3["EPIC-03: Shopping Cart Management"]
+    E4["EPIC-04: Order Processing & Lifecycle"]
+    E5["EPIC-05: Payment Integration (VNPAY & COD)"]
+    E6["EPIC-06: Inventory & Admin Back-office"]
+    E7["EPIC-07: Customer Engagement & Promotions (Post-MVP)"]
+    E8["EPIC-08: Real-time Chat & Notifications (GĐ2)"]
+
+    E1 --> E2 --> E3 --> E4 --> E5
+    E4 -.-> E6
+    E4 -.-> E7
+    E4 -.-> E8
 ```
 
 | Mã Epic | Tên Epic | Module Phụ Trách | Mục tiêu kinh doanh |
@@ -381,22 +380,57 @@ Dự án Shoptila được tổ chức thành **8 Epic** bao quát từ MVP đ�
 
 Dự án triển khai theo lộ trình **4 Sprint (8 tuần)** để hoàn thiện trọn vẹn Giai đoạn 1 (MVP hoàn chỉnh và sẵn sàng bàn giao):
 
-```
-┌──────────────────────────────────────────────────────────────────────────────────┐
-│                             LỘ TRÌNH 4 SPRINT (MVP GĐ1)                          │
-├─────────────────┬──────────────────┬──────────────────┬──────────────────────────┤
-│    SPRINT 1     │     SPRINT 2     │     SPRINT 3     │         SPRINT 4         │
-│ (Nền tảng & SP) │ (Giỏ hàng & Kho) │ (VNPAY & Đơn)    │ (Hoàn thiện & Polish)    │
-├─────────────────┼──────────────────┼──────────────────┼──────────────────────────┤
-│ • US-01 (Auth)  │ • US-07 (Cart)   │ • US-12 (VNPAY)  │ • US-03 (Profile)        │
-│ • US-02 (JWT)   │ • US-08 (Cart Q) │ • US-13 (IPN)    │ • US-11 (Hủy đơn)        │
-│ • US-04 (Catalog) • US-09 (Order)  │ • US-14 (Return) │ • US-21 (Review - Could) │
-│ • US-05 (Filter)│ • US-10 (Hist)   │ • US-15 (COD)    │ • US-22 (Wishlist)       │
-│ • US-06 (Detail)│ • US-18 (Admin P)│ • US-16 (Expiry) │ • Test tải & Fix bug     │
-│ • US-17 (Admin C│ • US-19 (Stock)  │ • US-20 (Admin O)│ • Hardening Release v1.0 │
-├─────────────────┼──────────────────┼──────────────────┼──────────────────────────┤
-│ Tổng: 19 SP     │ Tổng: 22 SP      │ Tổng: 26 SP      │ Tổng: 15 SP              │
-└─────────────────┴──────────────────┴──────────────────┴──────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph S1["SPRINT 1 (Tuần 1 - 2) | 19 SP"]
+        direction TB
+        S1_Goal["Mục tiêu: Nền tảng & SP"]
+        S1_Items["• US-01: Auth Register (3 SP)
+• US-02: Login & JWT (3 SP)
+• US-04: Catalog List (3 SP)
+• US-05: Specs Filter (5 SP)
+• US-06: Detail & Specs (2 SP)
+• US-17: Admin Category (3 SP)"]
+        S1_Goal --- S1_Items
+    end
+
+    subgraph S2["SPRINT 2 (Tuần 3 - 4) | 22 SP"]
+        direction TB
+        S2_Goal["Mục tiêu: Giỏ hàng & Kho an toàn"]
+        S2_Items["• US-07: Add to Cart (3 SP)
+• US-08: Manage Cart (3 SP)
+• US-09: Order & Reserve Stock (5 SP)
+• US-10: Order History (3 SP)
+• US-18: Admin Product CRUD (5 SP)
+• US-19: Stock Adjust (3 SP)"]
+        S2_Goal --- S2_Items
+    end
+
+    subgraph S3["SPRINT 3 (Tuần 5 - 6) | 26 SP"]
+        direction TB
+        S3_Goal["Mục tiêu: VNPAY & Admin Đơn"]
+        S3_Items["• US-12: VNPAY URL (5 SP)
+• US-13: IPN Idempotent (8 SP)
+• US-14: Return Result (3 SP)
+• US-15: COD Payment (2 SP)
+• US-16: Auto Cancel Job (5 SP)
+• US-20: Admin Orders (5 SP)"]
+        S3_Goal --- S3_Items
+    end
+
+    subgraph S4["SPRINT 4 (Tuần 7 - 8) | 15 SP"]
+        direction TB
+        S4_Goal["Mục tiêu: Hoàn thiện Release v1.0"]
+        S4_Items["• US-03: User Profile (2 SP)
+• US-11: Customer Cancel (3 SP)
+• US-21: Product Review (3 SP)
+• US-22: Wishlist (2 SP)
+• Load Testing & Bug Fixing
+• Hardening & Docker Demo"]
+        S4_Goal --- S4_Items
+    end
+
+    S1 --> S2 --> S3 --> S4
 ```
 
 ### Chi tiết mục tiêu từng Sprint:
@@ -427,37 +461,29 @@ Dự án triển khai theo lộ trình **4 Sprint (8 tuần)** để hoàn thi�
 
 Nhóm tuân thủ nghiêm ngặt 4 sự kiện chính của Scrum trong mỗi chu kỳ Sprint:
 
-```
-               ┌────────────────────────────────────────────────────────┐
-               │              SPRINT PLANNING (Đầu Sprint)              │
-               │  - PO trình bày mục tiêu & User Stories đạt DoR         │
-               │  - Team estimate Story Points (Planning Poker)          │
-               │  - Cam kết Sprint Goal & Sprint Backlog                │
-               └──────────────────────────┬─────────────────────────────┘
-                                          │
-                                          ▼
-               ┌────────────────────────────────────────────────────────┐
-               │              DAILY SCRUM (Hàng ngày - 15 phút)         │
-               │  1. Hôm qua đã làm gì để đạt Sprint Goal?              │
-               │  2. Hôm nay sẽ làm gì để đạt Sprint Goal?              │
-               │  3. Đang gặp khó khăn/trở ngại (blockers) gì?          │
-               └──────────────────────────┬─────────────────────────────┘
-                                          │
-                                          ▼
-               ┌────────────────────────────────────────────────────────┐
-               │             SPRINT REVIEW (Cuối Sprint - Demo)         │
-               │  - Trình chiếu sản phẩm thực tế chạy trên môi trường   │
-               │  - PO nghiệm thu từng Story theo DoD                   │
-               │  - Thu thập feedback từ các bên liên quan              │
-               └──────────────────────────┬─────────────────────────────┘
-                                          │
-                                          ▼
-               ┌────────────────────────────────────────────────────────┐
-               │           SPRINT RETROSPECTIVE (Họp cải tiến)           │
-               │  - What went well? (Điểm làm tốt)                      │
-               │  - What could be improved? (Điểm cần khắc phục)        │
-               │  - Action items cho Sprint kế tiếp                     │
-               └────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    P["SPRINT PLANNING (Đầu Sprint)
+- PO làm rõ mục tiêu & User Stories đạt DoR
+- Team ước lượng Story Points (Planning Poker)
+- Cam kết Sprint Goal & Sprint Backlog"]
+    D["DAILY SCRUM (Hàng ngày - 15 phút)
+1. Hôm qua đã làm gì để đạt Sprint Goal?
+2. Hôm nay sẽ làm gì để đạt Sprint Goal?
+3. Đang gặp khó khăn, trở ngại (blockers) gì?"]
+    R["SPRINT REVIEW (Cuối Sprint - Demo)
+- Trình chiếu sản phẩm chạy thật trên Docker demo
+- PO nghiệm thu từng Story theo DoD
+- Thu thập phản hồi từ các bên liên quan"]
+    Retro["SPRINT RETROSPECTIVE (Họp cải tiến)
+- What went well? (Điểm làm tốt)
+- What could be improved? (Điểm cần cải thiện)
+- Action items thực thi trong Sprint kế tiếp"]
+
+    P --> D
+    D -->|Hết chu kỳ 2 tuần| R
+    R --> Retro
+    Retro -->|Cải tiến quy trình cho vòng lặp mới| P
 ```
 
 ### Các chỉ số đo lường hiệu quả (Metrics):
