@@ -727,6 +727,10 @@ jobs:
 
 ## 8. Quản Lý Dự Án (GitHub Projects & Issue Tracking)
 
+> **Bảng GitHub Projects chính thức:** [Shoptila E-Commerce - Product Backlog](https://github.com/users/nhani05/projects/4)  
+> **Repository liên kết:** [`nhani05/shoptila-ecommerce`](https://github.com/nhani05/shoptila-ecommerce)  
+> **Trạng thái:** Đã nạp đầy đủ **25 User Stories** vào cột **Product Backlog** (chưa phân bổ vào Sprint Backlog).
+
 ### 8.1. Thiết lập Bảng GitHub Projects (Kanban Board)
 
 ```mermaid
