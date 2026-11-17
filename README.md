@@ -224,6 +224,26 @@ Tham số, mã phản hồi và định dạng cụ thể cần được đối 
 
 ## API
 
+### Swagger UI / OpenAPI
+
+Khi backend đang chạy (dev mặc định `http://localhost:8080`):
+
+| Mục | Địa chỉ |
+|---|---|
+| Swagger UI (bấm **Try it out** để gọi API) | http://localhost:8080/swagger-ui.html |
+| OpenAPI JSON | http://localhost:8080/v3/api-docs |
+| OpenAPI YAML | http://localhost:8080/v3/api-docs.yaml |
+
+- Tiêu đề, phiên bản, tag và mô tả chung cấu hình tại
+  `backend/src/main/java/com/example/shop/common/config/OpenApiConfig.java`; schema DTO và ví dụ
+  payload lấy từ `@Schema`/`@Operation`/`@ApiResponse` trong controller và DTO.
+- Lỗi `400/409/500` dùng schema `ApiProblemDetail` (RFC 7807 kèm mảng `errors[]` khi validate),
+  khớp với `specs/001-user-registration/contracts/auth-register.openapi.yaml`.
+- `tryItOutEnabled`, sắp xếp operation theo HTTP method, hiển thị thời lượng request và ô lọc được
+  bật trong `application.yml`.
+- Thử nhanh US-01: mở Swagger UI → `POST /api/v1/auth/register` → **Try it out** → chọn ví dụ
+  `minimal` → **Execute**. Lần đầu nhận `201`; gửi lại cùng email nhận `409`.
+
 Tài liệu đầy đủ ở Swagger UI (`/swagger-ui.html`). Tổng quan các nhóm endpoint (tiền tố `/api/v1`):
 
 | Nhóm | Endpoint | Quyền |
