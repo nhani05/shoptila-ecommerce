@@ -167,3 +167,26 @@ docker compose down          # thêm -v nếu muốn xóa dữ liệu dev
 - Đăng nhập và cấp JWT (US-02): trang `/login` chỉ là placeholder.
 - Giới hạn tần suất/ chống bot: đã ghi nhận rủi ro, chưa triển khai theo Assumptions của spec.
 - Xác minh email/SMS, quên mật khẩu, cập nhật hồ sơ.
+
+---
+
+## 10. Kết quả xác minh (2026-11-17)
+
+Môi trường chạy: PostgreSQL 16 (container) ở cổng `5433`, backend ở cổng `8081` do cổng mặc định
+`5432`/`8080` đang được tiến trình khác sử dụng.
+
+| Kịch bản | Kết quả |
+|---|---|
+| 5.1 Đăng ký hợp lệ | `201`; `role=ROLE_CUSTOMER`, `status=ACTIVE`, email lowercase, không có hash trong body |
+| 5.2 Trùng email khác hoa/thường + khoảng trắng | `409` `application/problem+json`, `type=.../errors/email-already-exists`, `instance=/api/v1/auth/register` |
+| 5.3 Dữ liệu sai nhiều trường | `400`, `errors[]` gồm `email`, `password` (2 lỗi), `fullName`, `phone`; thông điệp tiếng Việt |
+| 5.4 Mật khẩu emoji > 72 byte | `400` tại `password` ("Mật khẩu không được vượt quá 72 byte"), không `500` |
+| 5.5 Gửi `role=ROLE_ADMIN`, `isActive=false` | `201`, tài khoản vẫn `ROLE_CUSTOMER`/`ACTIVE` |
+| 5.6 CSDL | Email lowercase, `role=ROLE_CUSTOMER`, `is_active=t`, hash tiền tố `$2a$12$` |
+| deny-all | `GET /api/v1/unknown` → `403` |
+| Log | Chỉ `event=auth.registration.*` + `userId`; không email/mật khẩu/hash |
+| Test backend | `./mvnw test` — 15 test pass |
+| Test + build frontend | 18 test pass; `tsc --noEmit && vite build` thành công |
+
+Chưa chạy kiểm tra trình duyệt tự động (mục 6) vì môi trường hiện tại không có Chrome DevTools MCP;
+luồng form được phủ bởi `RegisterForm.test.tsx` (loading, 409, 400, validate, redirect).
