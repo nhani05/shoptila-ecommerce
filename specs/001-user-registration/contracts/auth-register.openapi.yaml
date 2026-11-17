@@ -1,0 +1,222 @@
+openapi: 3.1.0
+info:
+  title: Shoptila Auth API — US-01 Register
+  version: 1.0.0
+  description: |
+    Hợp đồng công khai cho tính năng đăng ký tài khoản khách hàng (US-01).
+    Đây là hợp đồng giữa frontend (`frontend/src/features/auth`) và backend
+    (`com.example.shop.auth`). Endpoint không yêu cầu xác thực.
+
+    Quy ước:
+    - Thành công trả `201 Created` với thông tin tài khoản, **không bao giờ** có mật khẩu/hash.
+    - Mọi lỗi tuân theo RFC 7807 `ProblemDetail`; lỗi kiểm tra dữ liệu kèm mảng `errors[]`.
+    - Thuộc tính JSON không được khai báo (ví dụ `role`, `isActive`) bị bỏ qua; server luôn gán
+      `ROLE_CUSTOMER` và `ACTIVE`.
+servers:
+  - url: http://localhost:8080
+    description: Backend phát triển (Vite proxy `/api` → cổng này)
+tags:
+  - name: Auth
+    description: Đăng ký, đăng nhập và hồ sơ tài khoản
+paths:
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      operationId: registerCustomer
+      summary: Đăng ký tài khoản khách hàng mới
+      description: |
+        Tạo tài khoản khách hàng đang hoạt động với vai trò `ROLE_CUSTOMER`.
+        Email được chuẩn hóa (trim + lowercase) trước khi kiểm tra duy nhất.
+        Mật khẩu được băm BCrypt (strength 12) và không bao giờ trả về.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            examples:
+              minimal:
+                summary: Chỉ các trường bắt buộc
+                value:
+                  email: khachhang@example.com
+                  password: MatKhau123
+                  fullName: Nguyễn Văn A
+              withPhone:
+                summary: Kèm số điện thoại
+                value:
+                  email: khachhang@example.com
+                  password: MatKhau123
+                  fullName: Nguyễn Văn A
+                  phone: '0987654321'
+      responses:
+        '201':
+          description: Tài khoản được tạo thành công.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+              example:
+                id: 42
+                email: khachhang@example.com
+                fullName: Nguyễn Văn A
+                phone: '0987654321'
+                role: ROLE_CUSTOMER
+                status: ACTIVE
+                createdAt: '2026-11-16T10:15:30Z'
+        '400':
+          description: |
+            Dữ liệu đầu vào không hợp lệ (vi phạm Bean Validation, JSON hỏng, hoặc mật khẩu vượt
+            72 byte UTF-8). Mảng `errors` liệt kê **tất cả** trường vi phạm.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
+              example:
+                type: https://api.shoptila.com/errors/validation-failed
+                title: Dữ liệu không hợp lệ
+                status: 400
+                detail: Một hoặc nhiều trường không hợp lệ.
+                instance: /api/v1/auth/register
+                errors:
+                  - field: email
+                    message: Định dạng email không hợp lệ
+                  - field: password
+                    message: Mật khẩu phải có ít nhất 1 chữ hoa, 1 chữ thường và 1 chữ số
+        '409':
+          description: Email đã được sử dụng bởi một tài khoản khác.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: https://api.shoptila.com/errors/email-already-exists
+                title: Email đã tồn tại
+                status: 409
+                detail: Email 'khachhang@example.com' đã được sử dụng. Vui lòng đăng nhập hoặc dùng email khác.
+                instance: /api/v1/auth/register
+        '415':
+          description: Content-Type không phải `application/json`.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '500':
+          description: Lỗi hệ thống không mong đợi. Không chứa chi tiết nội bộ hay stack trace.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: https://api.shoptila.com/errors/internal-error
+                title: Lỗi hệ thống
+                status: 500
+                detail: Đã xảy ra lỗi, vui lòng thử lại sau.
+                instance: /api/v1/auth/register
+components:
+  schemas:
+    RegisterRequest:
+      type: object
+      additionalProperties: true
+      required: [email, password, fullName]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 150
+          description: Được trim và chuyển lowercase trước khi kiểm tra/lưu.
+          examples: [khachhang@example.com]
+        password:
+          type: string
+          format: password
+          writeOnly: true
+          minLength: 8
+          maxLength: 72
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$'
+          description: |
+            8–72 ký tự, có ít nhất 1 chữ hoa, 1 chữ thường và 1 chữ số. Không được vượt quá
+            72 byte UTF-8 (CVE-2025-22228). Không được trim; không bao giờ được trả về.
+          examples: [MatKhau123]
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Được trim trước khi kiểm tra.
+          examples: [Nguyễn Văn A]
+        phone:
+          type: [string, 'null']
+          maxLength: 20
+          pattern: '^(0|\+84)[35789][0-9]{8}$'
+          description: |
+            Tùy chọn. Số di động Việt Nam: bắt đầu bằng `0` hoặc `+84`, đầu số 3/5/7/8/9,
+            theo sau là 8 chữ số. Chuỗi rỗng được coi là không cung cấp.
+          examples: ['0987654321']
+    RegisterResponse:
+      type: object
+      required: [id, email, fullName, role, status, createdAt]
+      properties:
+        id:
+          type: integer
+          format: int64
+        email:
+          type: string
+          format: email
+          description: Email đã chuẩn hóa (lowercase).
+        fullName:
+          type: string
+        phone:
+          type: [string, 'null']
+        role:
+          type: string
+          enum: [ROLE_CUSTOMER]
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+        createdAt:
+          type: string
+          format: date-time
+          description: ISO-8601 UTC.
+    FieldError:
+      type: object
+      required: [field, message]
+      properties:
+        field:
+          type: string
+          description: Tên trường JSON (ví dụ `email`, `password`, `fullName`, `phone`).
+        message:
+          type: string
+          description: Thông điệp tiếng Việt hiển thị được cho người dùng.
+    ProblemDetail:
+      type: object
+      description: RFC 7807 problem details.
+      required: [type, title, status]
+      properties:
+        type:
+          type: string
+          format: uri
+          description: URI định danh loại lỗi, ổn định theo thời gian.
+        title:
+          type: string
+          description: Tóm tắt ngắn, không thay đổi theo từng lần lỗi.
+        status:
+          type: integer
+          minimum: 400
+          maximum: 599
+        detail:
+          type: string
+          description: Giải thích cho lần lỗi cụ thể; không chứa chi tiết nội bộ.
+        instance:
+          type: string
+          description: Đường dẫn yêu cầu gây lỗi.
+    ValidationProblemDetail:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetail'
+        - type: object
+          required: [errors]
+          properties:
+            errors:
+              type: array
+              description: Danh sách đầy đủ các trường vi phạm trong cùng một phản hồi.
+              minItems: 1
+              items:
+                $ref: '#/components/schemas/FieldError'
