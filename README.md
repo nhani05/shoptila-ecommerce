@@ -28,7 +28,8 @@ Dự án xây dựng theo hướng **modular monolith** (Spring Boot), chia modu
 
 ### Khách hàng
 
-- Đăng ký, đăng nhập (JWT), xem thông tin tài khoản.
+- Đăng ký tài khoản khách hàng (**đã triển khai — US-01**): email duy nhất được chuẩn hóa, mật khẩu băm BCrypt strength 12, mặc định `ROLE_CUSTOMER` và trạng thái `ACTIVE`; lỗi trả theo `ProblemDetail`.
+- Đăng nhập (JWT), xem thông tin tài khoản.
 - Xem danh sách sản phẩm, **lọc theo giá, hãng, RAM, CPU**, phân trang, xem chi tiết.
 - Giỏ hàng: thêm, sửa số lượng, xóa.
 - Đặt hàng, nhập thông tin giao hàng, thanh toán qua VNPAY Sandbox.
@@ -165,18 +166,22 @@ Dữ liệu mẫu (tài khoản admin, danh mục, vài sản phẩm) nằm tron
 ### Chạy môi trường phát triển (không dùng Docker cho app)
 
 ```bash
-# Chỉ chạy PostgreSQL bằng Docker
+# Chỉ chạy PostgreSQL bằng Docker (đọc .env)
 docker compose up -d postgres
 
-# Backend
+# Backend — tự nạp .env ở thư mục gốc repo
 cd backend
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+./mvnw spring-boot:run
 
 # Frontend (terminal khác)
 cd frontend
 npm install
 npm run dev
 ```
+
+Backend tự đọc `.env` ở thư mục gốc (biến môi trường thật vẫn có độ ưu tiên cao hơn). Nếu cổng
+`8080` hoặc `5432` đã bị chiếm, đổi `SERVER_PORT` và `DB_PORT`/`DB_URL` trong `.env`, rồi đặt
+`VITE_API_PROXY_TARGET` trong `frontend/.env.local` cho khớp cổng backend.
 
 Vite đã cấu hình proxy `/api` về backend nên không gặp lỗi CORS khi phát triển.
 
@@ -235,13 +240,42 @@ Tài liệu đầy đủ ở Swagger UI (`/swagger-ui.html`). Tổng quan các n
 
 Lỗi trả về theo định dạng `ProblemDetail` (RFC 7807).
 
+### Đăng ký tài khoản (US-01 — đã triển khai)
+
+`POST /api/v1/auth/register` — công khai, không cấp phiên đăng nhập.
+
+```json
+{
+  "email": "khachhang@example.com",
+  "password": "MatKhau123",
+  "fullName": "Nguyễn Văn A",
+  "phone": "0987654321"
+}
+```
+
+`phone` là tùy chọn. Kết quả:
+
+| Mã | Nội dung |
+|---|---|
+| `201 Created` | `id`, `email` (đã trim + lowercase), `fullName`, `phone`, `role`, `status`, `createdAt`. Không chứa mật khẩu hay hash. |
+| `400 Bad Request` | `errors[]` liệt kê **mọi** trường vi phạm (email, mật khẩu, họ tên, số điện thoại). |
+| `409 Conflict` | `type=https://api.shoptila.com/errors/email-already-exists` khi email đã tồn tại, kể cả khác hoa/thường hoặc có khoảng trắng. |
+
+Quy tắc đã áp dụng:
+
+- Mật khẩu 8–72 ký tự, có ít nhất 1 chữ hoa, 1 chữ thường, 1 chữ số và **không vượt 72 byte UTF-8**; lưu dưới dạng BCrypt strength 12.
+- Server luôn gán `ROLE_CUSTOMER` và `ACTIVE`; thuộc tính `role`/`isActive` do client gửi bị bỏ qua.
+- Email là duy nhất ở CSDL (`uq_auth_users_email`): hai đăng ký đồng thời cùng email tạo đúng một tài khoản, yêu cầu còn lại nhận `409`, không có `5xx`.
+- Đăng ký thành công không tự đăng nhập; giao diện chuyển người dùng sang `/login`.
+
 ---
 
 ## Kiểm thử
 
 ```bash
-cd backend
-./mvnw test
+cd backend && ./mvnw test          # Testcontainers cần Docker đang chạy
+cd frontend && npm test -- --run   # Vitest (CI mode)
+cd frontend && npm run build       # tsc --noEmit && vite build
 ```
 
 Các nhóm test quan trọng:
@@ -253,6 +287,17 @@ Các nhóm test quan trọng:
 | `IpnIdempotencyTest` | Gọi IPN nhiều lần chỉ xử lý một lần |
 | `OrderFlowTest` | Luồng đặt hàng, thanh toán, hủy đơn |
 
+Test của US-01 (đã có):
+
+| Test | Mục đích |
+|---|---|
+| `AuthServiceTest` | Chuẩn hóa email, băm mật khẩu, gán quyền, chặn trùng email |
+| `AuthRegisterIntegrationTest` | HTTP 201/409, body không lộ hash, bỏ qua `role` do client gửi |
+| `RegistrationConcurrencyTest` | Hai yêu cầu đồng thời cùng email → một `201`, một `409`, một dòng dữ liệu |
+| `AuthValidationIntegrationTest` | `400` trả đầy đủ lỗi từng trường, không lộ chi tiết nội bộ |
+| `PasswordByteLimitTest` | Mật khẩu 72 byte hợp lệ, 73 byte và emoji đa byte bị từ chối với `400` |
+| `RegisterForm.test.tsx`, `validation.test.ts` | Validate client, ánh xạ `400`/`409` vào trường, loading/redirect |
+
 Integration test dùng Testcontainers (PostgreSQL), cần Docker đang chạy.
 
 ---
@@ -261,7 +306,7 @@ Integration test dùng Testcontainers (PostgreSQL), cần Docker đang chạy.
 
 | Giai đoạn | Nội dung | Trạng thái |
 |---|---|---|
-| **1** | Modular monolith: auth, catalog, cart, inventory, order, payment, VNPAY Sandbox, Docker Compose | Đang làm |
+| **1** | Modular monolith: auth, catalog, cart, inventory, order, payment, VNPAY Sandbox, Docker Compose | Đang làm — US-01 (đăng ký) hoàn thành |
 | **2** | WebSocket/STOMP: trạng thái đơn realtime, chat khách và shop, thông báo, email. Job đối soát giao dịch với VNPAY. Refresh token | Kế hoạch |
 | **3** | Tách microservices (ưu tiên `payment`, `inventory`), API Gateway, Kafka, outbox, Redis. Mỗi module một schema riêng | Kế hoạch |
 | **4** | Vận hành: Resilience4j, Prometheus và Grafana, CI/CD, đo tải với JMeter | Kế hoạch |

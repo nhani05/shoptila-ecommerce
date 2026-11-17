@@ -1,0 +1,55 @@
+# GitHub Issues — US-01
+
+Parent: [#1](https://github.com/nhani05/shoptila-ecommerce/issues/1) — [US-01] Đăng ký tài khoản khách hàng mới
+
+| Task | Issue |
+|:---|:---|
+| T001 | [#30](https://github.com/nhani05/shoptila-ecommerce/issues/30) |
+| T002 | [#31](https://github.com/nhani05/shoptila-ecommerce/issues/31) |
+| T003 | [#32](https://github.com/nhani05/shoptila-ecommerce/issues/32) |
+| T004 | [#33](https://github.com/nhani05/shoptila-ecommerce/issues/33) |
+| T005 | [#34](https://github.com/nhani05/shoptila-ecommerce/issues/34) |
+| T006 | [#35](https://github.com/nhani05/shoptila-ecommerce/issues/35) |
+| T007 | [#36](https://github.com/nhani05/shoptila-ecommerce/issues/36) |
+| T008 | [#37](https://github.com/nhani05/shoptila-ecommerce/issues/37) |
+| T009 | [#38](https://github.com/nhani05/shoptila-ecommerce/issues/38) |
+| T010 | [#39](https://github.com/nhani05/shoptila-ecommerce/issues/39) |
+| T011 | [#40](https://github.com/nhani05/shoptila-ecommerce/issues/40) |
+| T012 | [#41](https://github.com/nhani05/shoptila-ecommerce/issues/41) |
+| T013 | [#42](https://github.com/nhani05/shoptila-ecommerce/issues/42) |
+| T014 | [#43](https://github.com/nhani05/shoptila-ecommerce/issues/43) |
+| T015 | [#44](https://github.com/nhani05/shoptila-ecommerce/issues/44) |
+| T016 | [#45](https://github.com/nhani05/shoptila-ecommerce/issues/45) |
+| T017 | [#46](https://github.com/nhani05/shoptila-ecommerce/issues/46) |
+| T018 | [#47](https://github.com/nhani05/shoptila-ecommerce/issues/47) |
+| T019 | [#48](https://github.com/nhani05/shoptila-ecommerce/issues/48) |
+| T020 | [#49](https://github.com/nhani05/shoptila-ecommerce/issues/49) |
+| T021 | [#50](https://github.com/nhani05/shoptila-ecommerce/issues/50) |
+| T022 | [#51](https://github.com/nhani05/shoptila-ecommerce/issues/51) |
+| T023 | [#52](https://github.com/nhani05/shoptila-ecommerce/issues/52) |
+| T024 | [#53](https://github.com/nhani05/shoptila-ecommerce/issues/53) |
+| T025 | [#54](https://github.com/nhani05/shoptila-ecommerce/issues/54) |
+| T026 | [#55](https://github.com/nhani05/shoptila-ecommerce/issues/55) |
+| T027 | [#56](https://github.com/nhani05/shoptila-ecommerce/issues/56) |
+| T028 | [#57](https://github.com/nhani05/shoptila-ecommerce/issues/57) |
+| T029 | [#58](https://github.com/nhani05/shoptila-ecommerce/issues/58) |
+| T030 | [#59](https://github.com/nhani05/shoptila-ecommerce/issues/59) |
+| T031 | [#60](https://github.com/nhani05/shoptila-ecommerce/issues/60) |
+| T032 | [#61](https://github.com/nhani05/shoptila-ecommerce/issues/61) |
+| T033 | [#62](https://github.com/nhani05/shoptila-ecommerce/issues/62) |
+| T034 | [#63](https://github.com/nhani05/shoptila-ecommerce/issues/63) |
+| T035 | [#64](https://github.com/nhani05/shoptila-ecommerce/issues/64) |
+| T036 | [#65](https://github.com/nhani05/shoptila-ecommerce/issues/65) |
+| T037 | [#66](https://github.com/nhani05/shoptila-ecommerce/issues/66) |
+| T038 | [#67](https://github.com/nhani05/shoptila-ecommerce/issues/67) |
+| T039 | [#68](https://github.com/nhani05/shoptila-ecommerce/issues/68) |
+| T040 | [#69](https://github.com/nhani05/shoptila-ecommerce/issues/69) |
+| T041 | [#70](https://github.com/nhani05/shoptila-ecommerce/issues/70) |
+| T042 | [#71](https://github.com/nhani05/shoptila-ecommerce/issues/71) |
+| T043 | [#72](https://github.com/nhani05/shoptila-ecommerce/issues/72) |
+| T044 | [#73](https://github.com/nhani05/shoptila-ecommerce/issues/73) |
+| T045 | [#74](https://github.com/nhani05/shoptila-ecommerce/issues/74) |
+| T046 | [#75](https://github.com/nhani05/shoptila-ecommerce/issues/75) |
+| T047 | [#76](https://github.com/nhani05/shoptila-ecommerce/issues/76) |
+| T048 | [#77](https://github.com/nhani05/shoptila-ecommerce/issues/77) |
+| T049 | [#78](https://github.com/nhani05/shoptila-ecommerce/issues/78) |

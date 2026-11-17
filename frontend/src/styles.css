@@ -1,0 +1,241 @@
+:root {
+  --color-bg: #f4f6fb;
+  --color-surface: #ffffff;
+  --color-text: #1a2233;
+  --color-muted: #5b6478;
+  --color-border: #d6dcea;
+  --color-primary: #2456d6;
+  --color-primary-hover: #1c45ad;
+  --color-error: #b42318;
+  --color-error-bg: #fef3f2;
+  --color-success: #027a48;
+  --color-success-bg: #ecfdf3;
+  --radius: 10px;
+  --shadow: 0 12px 32px rgb(26 34 51 / 10%);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0f1420;
+    --color-surface: #171e2e;
+    --color-text: #e8ecf5;
+    --color-muted: #a5aec3;
+    --color-border: #2c3550;
+    --color-primary: #6f93ff;
+    --color-primary-hover: #8aa6ff;
+    --color-error: #ff9c92;
+    --color-error-bg: #3b1d1a;
+    --color-success: #6ce9a6;
+    --color-success-bg: #13291f;
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
+}
+
+.auth-page {
+  display: flex;
+  justify-content: center;
+  padding: 48px 16px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32px;
+}
+
+.auth-card h1 {
+  margin: 0 0 8px;
+  font-size: 1.6rem;
+}
+
+.auth-subtitle {
+  margin: 0 0 24px;
+  color: var(--color-muted);
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.form-field--checkbox {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 8px;
+}
+
+.form-field--checkbox input {
+  margin-top: 4px;
+}
+
+.form-field--checkbox .field-error {
+  grid-column: 1 / -1;
+}
+
+input[type='text'],
+input[type='email'],
+input[type='tel'],
+input[type='password'] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: inherit;
+}
+
+input:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+  outline-offset: 2px;
+}
+
+input[aria-invalid='true'] {
+  border-color: var(--color-error);
+}
+
+.password-input {
+  display: flex;
+  gap: 8px;
+}
+
+.password-input input {
+  flex: 1;
+}
+
+.password-toggle {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  font: inherit;
+}
+
+.field-error,
+.form-error {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  font-size: 0.9rem;
+}
+
+.form-success {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.submit-button {
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: var(--color-primary);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.submit-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.form-footer {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.form-footer a {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.password-strength {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.password-strength__bars {
+  display: flex;
+  gap: 4px;
+}
+
+.password-strength__bar {
+  height: 5px;
+  flex: 1;
+  border-radius: 999px;
+  background: var(--color-border);
+}
+
+.password-strength[data-strength='weak'] .password-strength__bar--filled {
+  background: var(--color-error);
+}
+
+.password-strength[data-strength='medium'] .password-strength__bar--filled {
+  background: #dc8a13;
+}
+
+.password-strength[data-strength='strong'] .password-strength__bar--filled {
+  background: var(--color-success);
+}
+
+.password-strength[data-strength='too-long'] .password-strength__bar--filled {
+  background: var(--color-error);
+}
+
+@media (max-width: 560px) {
+  .auth-page {
+    padding: 24px 16px;
+  }
+
+  .auth-card {
+    padding: 24px 20px;
+  }
+}
