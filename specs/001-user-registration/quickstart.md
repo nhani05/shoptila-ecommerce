@@ -185,7 +185,9 @@ Môi trường chạy: PostgreSQL 16 (container) ở cổng `5433`, backend ở 
 | 5.6 CSDL | Email lowercase, `role=ROLE_CUSTOMER`, `is_active=t`, hash tiền tố `$2a$12$` |
 | deny-all | `GET /api/v1/unknown` → `403` |
 | Log | Chỉ `event=auth.registration.*` + `userId`; không email/mật khẩu/hash |
-| Test backend | `./mvnw test` — 15 test pass |
+| Swagger UI | `GET /swagger-ui.html` → `302` tới `/swagger-ui/index.html` (`200`, tiêu đề `Swagger UI`) |
+| OpenAPI JSON/YAML | `/v3/api-docs` và `/v3/api-docs.yaml` → `200`; `info.title=Shoptila API`, `info.version=1.0.0`, operation `registerCustomer`, schema `ApiProblemDetail` |
+| Test backend | `./mvnw test` — 19 test pass |
 | Test + build frontend | 18 test pass; `tsc --noEmit && vite build` thành công |
 
 Chưa chạy kiểm tra trình duyệt tự động (mục 6) vì môi trường hiện tại không có Chrome DevTools MCP;
